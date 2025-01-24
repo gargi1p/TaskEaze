@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="style/style.css" />
+  </head>
+  <body>
+    <div id="header-container"></div>
+    <input type="checkbox" id="checkbox" />
+    <div class="s-body">
+      <section class="settings-container">
+    <h1>Edit Profile</h1>
+    <br />
+    <div class="auth-form" style="margin-left: 25%;">
+    <div id="user-info">
+      <div class="profile-details">
+        <p><strong>Name:</strong> <span id="name"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+      </div>
+    </div>
+
+    <h3 style="color:#0056b3;">Update Profile</i></h3>
+    <form id="editProfileForm" >
+      <div class="profile-container">
+        <label for="Newname">Name:</label>
+        <input
+          type="text"
+          id="Newname"
+          name="name"
+          placeholder="Enter New Name"
+          class="input-1"
+          autocomplete="off"
+          required
+        />
+
+        <button id= "edit-button"type="submit">Update</button><br><br><br>
+      </div>
+    </form>
+
+    <h3 style= "color:#0056b3;">Update Password</i></h3>
+    <form id="updatePasswordForm" >
+      <div class="profile-container">
+        <label for="newPassword">Password:</label>
+        <input
+          type="password"
+          id="newPassword"
+          name="password"
+          placeholder="Enter New Password"
+          autocomplete="off"
+          class="input-1"
+          required
+        />
+        <label for="rePassword">Repeat Password:</label>
+        <input
+          type="password"
+          id="rePassword"
+          name="re_password"
+          placeholder="Repeat Password"
+          autocomplete="off"
+          class="input-1"
+          required
+        />
+      </div>
+      <button id="edit-button" type="submit">Change Password</button></div>
+    </form>
+      </section>
+    </div>
+    <script>
+
+      // Fetch user profile info
+      fetch("http://localhost:4000/profile", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.name && data.email) {
+            document.getElementById("name").textContent = data.name;
+            document.getElementById("email").textContent = data.email;
+          } else {
+            alert("Failed to fetch user info.");
+          }
+        });
+
+      // Update profile
+      document
+        .getElementById("editProfileForm")
+        .addEventListener("submit", (event) => {
+          event.preventDefault();
+          const name = document.getElementById("Newname").value;
+          //   const email = document.getElementById("newEmail").value;
+
+          fetch("http://localhost:4000/profile", {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, email }),
+          })
+            .then((response) => response.json())
+            .then((data) => alert(data.message));
+        });
+
+      // Update password
+      document
+        .getElementById("updatePasswordForm")
+        .addEventListener("submit", (event) => {
+          event.preventDefault();
+          const password = document.getElementById("newPassword").value;
+          const re_password = document.getElementById("rePassword").value;
+
+          fetch("http://localhost:4000/edit-profile", {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ password, re_password }),
+          })
+            .then((response) => response.json())
+            .then((data) => alert(data.message));
+        });
+    </script>
+ <script src="script/latestScript.js"></script>  
+</body>
+</html>

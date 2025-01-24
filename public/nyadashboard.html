@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="style/style.css" />
+  </head>
+  <body>
+    <div id="header-container"></div>
+    <div class="body">
+    <div id="main">
+      <div class="dashboard-container" id="dashboard">
+        <h1 class="page-title">Dashboard Overview</h1>
+        <div class="dashboard-grid stats">
+          <div class="dashboard-card stat">
+            <h2>Total Tasks</h2>
+            <p class="card-number" id="totalTasks">0</p>
+            <span class="card-footer">All tasks created</span>
+          </div>
+          <div class="dashboard-card stat">
+            <h2>Completed Tasks</h2>
+            <p class="card-number" id="completedTasks">0</p>
+            <span class="card-footer">Tasks marked as completed</span>
+          </div>
+          <div class="dashboard-card stat">
+            <h2>Non-Completed Tasks</h2>
+            <p class="card-number" id="nonCompletedTasks">0</p>
+            <span class="card-footer">Tasks yet to be completed</span>
+          </div>
+          <div class="dashboard-card stat">
+            <h2>Active Tasks</h2>
+            <p class="card-number" id="activeTasksCount">0</p>
+            <span class="card-footer">Currently active tasks</span>
+          </div>
+        </div>
+        <div id="task-list">
+          <h2>Your Tasks</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Priority</th>
+                <th>Due Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="tasksTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    </div>
+    <script src="./script/latestScript.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const API_BASE_URL = "http://localhost:4000";
+        const token = localStorage.getItem("token");
+        const totalTasksEl = document.getElementById("totalTasks");
+        const completedTasksEl = document.getElementById("completedTasks");
+        const nonCompletedTasksEl =
+          document.getElementById("nonCompletedTasks");
+        const activeTasksCountEl = document.getElementById("activeTasksCount");
+        const tasksTable = document.getElementById("tasksTable");
+
+        if (!token) {
+          window.location.href = "/login.html"; // Redirect to login page
+          return;
+        }
+
+        async function fetchDashboardData() {
+          try {
+            const response = await fetch(`${API_BASE_URL}/dashboard`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            if (response.ok) {
+              const stats = await response.json();
+              totalTasksEl.textContent = stats.totalTasks;
+              completedTasksEl.textContent = stats.completedTasks;
+              nonCompletedTasksEl.textContent = stats.nonCompletedTasks;
+              activeTasksCountEl.textContent = stats.activeTasks;
+            } else {
+              console.error("Failed to fetch dashboard stats");
+            }
+          } catch (error) {
+            console.error("Error fetching dashboard data:", error);
+          }
+        }
+
+        async function fetchTasks() {
+          try {
+            const response = await fetch(`${API_BASE_URL}/get-task`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            if (response.ok) {
+              const tasks = await response.json();
+              tasksTable.innerHTML = ""; // Clear the table
+
+              tasks.forEach((task) => {
+                const row = document.createElement("tr");
+                const formattedDate = new Date(task.due_date).toISOString().split('T')[0];
+                row.innerHTML = `
+                  <td>${task.title}</td>
+                  <td>${task.priority}</td>
+                  <td>${formattedDate}</td>
+                  <td><button class="complete-btn" data-id="${task.id}">Mark as Completed</button></td>
+                `;
+                tasksTable.appendChild(row);
+              });
+              // Add event listeners for Mark as Completed buttons
+              document.querySelectorAll(".complete-btn").forEach((button) => {
+                button.addEventListener("click", async (event) => {
+                  const taskId = event.target.getAttribute("data-id");
+                  try {
+                    const response = await fetch(
+                      `${API_BASE_URL}/complete-task/${taskId}`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      }
+                    );
+
+                    if (response.ok) {
+                      alert("Task marked as completed!");
+                      fetchDashboardData(); // Refresh stats
+                      fetchTasks(); // Refresh task list
+                    } else {
+                      const errorData = await response.json();
+                      alert(`Failed to complete task: ${errorData.error}`);
+                    }
+                  } catch (error) {
+                    console.error("Error marking task as completed:", error);
+                    alert(
+                      "Error marking task as completed. Please try again later."
+                    );
+                  }
+                });
+              });
+            } else {
+              console.error("Failed to fetch tasks");
+            }
+          } catch (error) {
+            console.error("Error fetching tasks:", error);
+          }
+        }
+
+        // Fetch data on page load
+        fetchDashboardData();
+        fetchTasks();
+      });
+    </script>
+  </body>
+</html>
+

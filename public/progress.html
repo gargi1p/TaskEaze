@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Progress Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body>
+    <div id="header-container"></div>
+    <input type="checkbox" id="checkbox">
+	<div class="s-body">
+
+    <div id="main">
+        <section id="progress">
+            <h2>Task Progress</h2>
+            <div class="progress-container">
+                <div class="progress-half-circle" id="progress-circle">
+                    <span class="progress-percentage" id="progress-percentage">0%</span>
+                </div>
+                <div class="progress-label">Overall Progress</div>
+            </div>
+        </section>
+
+        <section id="calendar">
+            <h2>Yearly Calendar</h2>
+            <div id="calendar-container">
+                <!-- Calendar will be dynamically generated -->
+            </div>
+        </section>
+
+        <section id="about">
+            <h2>About</h2>
+            <p>This page demonstrates a horizontal half-circle progress tracker and a yearly calendar layout with a sidebar navigation bar.</p>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Half-Circle Progress Logic
+            const progressCircle = document.getElementById("progress-circle");
+            const progressLabel = document.getElementById("progress-percentage");
+
+            function updateHalfCircleProgress(progress) {
+                const clampedProgress = Math.max(0, Math.min(progress, 100)); // Ensure progress is between 0 and 100
+                const angle = clampedProgress * 1.8; // Convert percentage to degrees (half-circle: 180deg = 100%)
+                progressCircle.style.background = `conic-gradient(#4CAF50 ${angle}deg, #ddd ${angle}deg)`;
+                progressLabel.textContent = `${clampedProgress}%`;
+            }
+
+            // Example: Set progress to 75%
+            updateHalfCircleProgress(75);
+
+            // Calendar Generation
+            const calendarContainer = document.getElementById("calendar-container");
+            const months = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+            function generateCalendar() {
+                const currentYear = new Date().getFullYear();
+                months.forEach((month, monthIndex) => {
+                    const monthDiv = document.createElement("div");
+                    monthDiv.classList.add("month");
+
+                    const monthTitle = document.createElement("h3");
+                    monthTitle.textContent = `${month} ${currentYear}`;
+                    monthDiv.appendChild(monthTitle);
+
+                    const monthDays = document.createElement("ul");
+                    weekdays.forEach(day => {
+                        const weekdayLi = document.createElement("li");
+                        weekdayLi.textContent = day;
+                        weekdayLi.classList.add("weekday");
+                        monthDays.appendChild(weekdayLi);
+                    });
+
+                    const firstDay = new Date(currentYear, monthIndex, 1).getDay();
+                    const totalDays = new Date(currentYear, monthIndex + 1, 0).getDate();
+
+                    for (let i = 0; i < firstDay; i++) {
+                        monthDays.appendChild(document.createElement("li"));
+                    }
+
+                    for (let day = 1; day <= totalDays; day++) {
+                        const dayLi = document.createElement("li");
+                        dayLi.textContent = day;
+                        monthDays.appendChild(dayLi);
+                    }
+
+                    monthDiv.appendChild(monthDays);
+                    calendarContainer.appendChild(monthDiv);
+                });
+            }
+
+            generateCalendar();
+        });
+    </script>
+    <script src="script/latestScript.js"></script>
+</body>
+</html>

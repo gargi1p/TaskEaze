@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="style/style.css" />
+  </head>
+  <body class="centre-body">
+    <h1>Login to TaskEaze</h1>
+    <br />
+    <form class="auth-form" id="loginForm">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" autocomplete="off" required />
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+
+      <input type="submit" value="Login" />
+    </form>
+    <div id="error-message" style="color: red; margin-top: 10px"></div>
+    <p class="auth-link">
+      Don't have an account? <a href="register.html">Register here</a>.
+    </p>
+
+    <script>
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            const response = await fetch("http://localhost:4000/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+              localStorage.setItem("token", data.token);
+              window.location.href = "./nyadashboard.html";
+            } else {
+              alert("Check your credentials");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred.");
+          }
+        });
+    </script>
+  </body>
+</html>

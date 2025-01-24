@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Task</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="style/style.css" />
+  </head>
+  <body>
+    <div id="header-container"></div>
+    <input type="checkbox" id="checkbox" />
+    <div class="body">
+      <section class="section-1">
+      
+        <div id="task-creation">
+          <form id="taskForm" class="form-1">
+            <h2 class="title"><u>Create a New Task</u></h2>
+            <br />
+            <div class="input-holder">
+              <label for="title">Title:</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                class="input-1"
+                autocomplete="off"
+                placeholder="Title"
+                required
+              /><br /><br />
+            </div>
+            <div class="input-holder">
+              <label for="due_date">Due Date:</label>
+              <input
+                type="date"
+                id="due_date"
+                class="input-1"
+                placeholder="Due Date"
+                name="due_date"
+                required
+              /><br /><br />
+            </div>
+            <div class="input-holder">
+              <label for="priority">Priority:</label>
+              <select id="priority" name="priority" required>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Urgent">Urgent</option></select
+              ><br /><br />
+            </div>
+            <div class="input-holder">
+              <label for="repeat">Repeat:</label>
+              <select id="repeat" name="repeat">
+                <option value="None">None</option>
+                <option value="Daily">Daily</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Monthly">Monthly</option></select
+              ><br /><br />
+            </div>
+            <div class="input-holder">
+              <label for="notes">Notes:</label>
+              <textarea id="notes" rows="3" name="notes" autocomplete="off"></textarea><br /><br />
+            </div>
+            <div class="input-holder">
+              <label for="collaborators">Collaborators:</label>
+              <input
+                type="text"
+                id="collaborators"
+                name="collaborators"
+                autocomplete="off"
+                placeholder="Add by name or email"
+              /><br /><br />
+            </div>
+            <button class="edit-btn" type="submit">Create Task</button>
+          </form>
+        </div>
+      </section>
+    </div>
+  
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const taskForm = document.getElementById("taskForm");
+        const tasksList = document.getElementById("tasks");
+        const API_BASE_URL = "http://localhost:4000";
+
+        // Retrieve token from localStorage
+        const token = localStorage.getItem("token");
+        if (!token) {
+          window.location.href = "/login.html"; // Redirect to login page
+          return;
+        }
+
+        // Create a task
+        taskForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const title = document.getElementById("title").value;
+          const due_date = document.getElementById("due_date").value;
+          const priority = document.getElementById("priority").value;
+          const repeat = document.getElementById("repeat").value;
+          const notes = document.getElementById("notes").value;
+          const collaborators = document.getElementById("collaborators").value;
+
+          const taskData = {
+            title,
+            due_date,
+            priority,
+            repeat,
+            notes,
+            collaborators,
+          };
+
+          try {
+            const response = await fetch(`${API_BASE_URL}/create-task`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(taskData),
+            });
+
+            if (response.ok) {
+              alert("Task created successfully!");
+              fetchTasks(); // Refresh task list
+              taskForm.reset();
+            } else {
+              const errorData = await response.json();
+              alert(`Failed to create task: ${errorData.error}`);
+            }
+          } catch (error) {
+            console.error("Error creating task:", error);
+            alert("Error creating task. Please try again later.");
+          }
+        });
+
+        // Fetch all tasks
+        async function fetchTasks() {
+          try {
+            const response = await fetch(`${API_BASE_URL}/get-task`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            if (response.ok) {
+              const tasks = await response.json();
+              tasksList.innerHTML = ""; // Clear existing tasks
+              tasks.forEach((task) => {
+                const taskItem = document.createElement("li");
+                taskItem.textContent = `${task.title} - ${task.priority} - ${task.due_date}`;
+                tasksList.appendChild(taskItem);
+              });
+            } else {
+              const errorData = await response.json();
+              alert(`Failed to fetch tasks: ${errorData.error}`);
+            }
+          } catch (error) {
+            console.error("Error fetching tasks:", error);
+          }
+        }
+        async function fetchTasks() {
+          try {
+            const response = await fetch(`${API_BASE_URL}/get-task`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            if (response.ok) {
+              const tasks = await response.json();
+              tasksList.innerHTML = ""; // Clear existing tasks
+              tasks.forEach((task) => {
+                const taskItem = document.createElement("li");
+                taskItem.innerHTML = `<span>${task.title} - ${task.priority} - ${task.due_date}</span>
+          <button class="complete-btn" data-id="${task.id}">Mark as Completed</button>
+        `;
+                tasksList.appendChild(taskItem);
+              });
+
+              // Attach event listeners for completion
+              document.querySelectorAll(".complete-btn").forEach((button) => {
+                button.addEventListener("click", async (event) => {
+                  const taskId = event.target.getAttribute("data-id");
+                  try {
+                    const response = await fetch(
+                      `${API_BASE_URL}/complete-task/${taskId}`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      }
+                    );
+
+                    if (response.ok) {
+                      alert("Task marked as completed!");
+                      fetchTasks(); // Refresh task list
+                    } else {
+                      const errorData = await response.json();
+                      alert(`Failed to complete task: ${errorData.error}`);
+                    }
+                  } catch (error) {
+                    console.error("Error marking task as completed:", error);
+                    alert(
+                      "Error marking task as completed. Please try again later."
+                    );
+                  }
+                });
+              });
+            } else {
+              const errorData = await response.json();
+              alert(`Failed to fetch tasks: ${errorData.error}`);
+            }
+          } catch (error) {
+            console.error("Error fetching tasks:", error);
+          }
+        }
+        // Fetch tasks on page load
+        fetchTasks();
+      });
+    </script>
+    <script src="script/latestScript.js"></script> 
+  </body>
+</html>

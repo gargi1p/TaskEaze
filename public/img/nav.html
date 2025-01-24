@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script>
+    // Fetch user profile info
+    fetch("http://localhost:4000/profile", {
+   method: "GET",
+   headers: {
+     Authorization: `Bearer ${localStorage.getItem("token")}`,
+   },
+ })
+   .then((response) => {
+     if (!response.ok) {
+       throw new Error(`HTTP error! status: ${response.status}`);
+     }
+     return response.json();
+   })
+   //
+   //  fetch("http://localhost:4000/profile", {
+   //       method: "GET",
+   //       headers: {
+   //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+   //       },
+   //     })
+   //       .then((response) => response.json()) 
+         .then((data) => {
+           console.log(data);
+           if (data.name && data.email) {
+             document.getElementById("name").textContent = data.name;
+             document.getElementById("email").textContent = data.email;
+           } else {
+             alert("Failed to fetch user info.");
+           }
+         });
+ </script> 
+</head>
+<body>
+  <!-- eski alg copy rakhi ho ntum kyuki ab pura change kr dung ek min ruko use run krk dekhu  ha chalo mai dusri file bna leta hu -->
+  <!-- script code moved under head tag  aye? hu- heloo tumne song lgaya hai kya ekmin bnd kr deti hu->
+  <div> ha ha jrur
+<nav class="side-bar">
+  <div class="user-profile">
+    <img src="/public/img/profile.png" width="50px" />
+    <h4> <p><strong>Name:</strong> <span id="name"></span></p>
+      <p><strong>Email:</strong> <span id="email"></span></p></h4>
+  </div>
+
+  <ul id="navList">
+    <li>
+      <a href="dashboard.html">
+        <i class="fa fa-tachometer" aria-hidden="true"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+
+    <li>
+      <a href="create_task.html">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+        <span>Create Task</span>
+      </a>
+    </li>
+    <li>
+      <a href="progress.html">
+        <i class="fa fa-bar-chart" aria-hidden="true"></i>
+        <span>Reports</span>
+      </a>
+    </li>
+
+    <li>
+      <a href="collaborative_task.html">
+        <i class="fa fa-users" aria-hidden="true"></i>
+        <span>Collaborative Tasks</span>
+      </a>
+    </li>
+    <li>
+      <a href="achievement.html">
+        <i class="fa fa-trophy" aria-hidden="true"></i>
+        <span>Achievements</span>
+      </a>
+    </li>
+    <li>
+      <a href="settings.html">
+        <i class="fa fa-cog" aria-hidden="true"></i>
+        <span>Settings</span>
+      </a>
+    </li>
+    <li>
+      <a href="login.html">
+        <i class="fa fa-sign-out" aria-hidden="true"></i>
+        <span>Logout</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+</div>
+
+</body>
+</html>

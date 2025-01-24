@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborative Task Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body>
+    <div id="header-container"></div>
+    <input type="checkbox" id="checkbox">
+	<div class="s-body">
+
+    <div id="main">
+        <section>
+            <h2>Add a Task</h2>
+            <div class="task-input-container">
+                <input type="text" id="task-name" placeholder="Task name">
+                <select id="collaborators">
+                    <option value="" disabled selected>Assign a collaborator</option>
+                    <option value="Alice">Alice</option>
+                    <option value="Bob">Bob</option>
+                    <option value="Charlie">Charlie</option>
+                </select>
+                <button onclick="addTask()">Add Task</button>
+            </div>
+        </section>
+
+        <section>
+            <h2>Task List</h2>
+            <ul id="task-list" class="task-list"></ul>
+        </section>
+    </div>
+    <script>
+        const taskList = document.getElementById("task-list");
+
+        // Add a new task
+        function addTask() {
+            const taskNameInput = document.getElementById("task-name");
+            const collaboratorSelect = document.getElementById("collaborators");
+
+            const taskName = taskNameInput.value.trim();
+            const collaborator = collaboratorSelect.value;
+
+            if (!taskName) {
+                alert("Please enter a task name.");
+                return;
+            }
+
+            // Create a task element
+            const taskItem = document.createElement("li");
+            taskItem.className = "task-item";
+
+            taskItem.innerHTML = `
+                <div>
+                    <strong>${taskName}</strong>
+                    <div class="collaborators">
+                        ${collaborator ? `<span>${collaborator}</span>` : ""}
+                    </div>
+                </div>
+                <div class="actions">
+                    <button onclick="toggleTask(this)">Complete</button>
+                    <button class="delete" onclick="deleteTask(this)">Delete</button>
+                </div>
+            `;
+
+            // Append to the task list
+            taskList.appendChild(taskItem);
+
+            // Clear inputs
+            taskNameInput.value = "";
+            collaboratorSelect.selectedIndex = 0;
+        }
+
+        // Toggle task completion
+        function toggleTask(button) {
+            const taskItem = button.closest(".task-item");
+            taskItem.classList.toggle("completed");
+        }
+
+        // Delete a task
+        function deleteTask(button) {
+            const taskItem = button.closest(".task-item");
+            taskItem.remove();
+        }
+    </script>
+    <script src="script/latestScript.js"></script>
+</body>
+</html>

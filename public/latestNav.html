@@ -1,0 +1,76 @@
+<div id="header-nav">
+    <header class="header">
+      <h2 class="u-name">Task <b>Eaze</b></h2>
+      <span class="notification" id="notificationBtn">
+        <i class="fa fa-bell" aria-hidden="true"></i>
+        <span id="notificationNum">0</span>
+      </span>
+    </header>
+    <nav class="side-bar">
+      <div class="user-profile">
+        <img id="user-img" src="/public/img/profile.png" width="60px" />
+        <div id="details-info">
+          <p><strong>Name:</strong> <span id="name">Loading...</span></p>
+          <!-- <p><strong>Email:</strong> <span id="email">Loading...</span></p> -->
+        </div>
+      </div>
+  
+      <ul id="navList">
+        <li>
+          <a href="nyadashboard.html">
+            <i class="fa fa-tachometer" aria-hidden="true"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="create_task.html">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            <span>Create Task</span>
+          </a>
+        </li>
+        <li>
+          <a href="progress.html">
+            <i class="fa fa-bar-chart" aria-hidden="true"></i>
+            <span>Reports</span>
+          </a>
+        </li>
+        <!-- <li>
+          <a href="collaborative_task.html">
+            <i class="fa fa-users" aria-hidden="true"></i>
+            <span>Collaborative Tasks</span>
+          </a>
+        </li> -->
+        <li>
+          <a href="new_achievement.html">
+            <i class="fa fa-trophy" aria-hidden="true"></i>
+            <span>Achievements</span>
+          </a>
+        </li>
+        <li>
+          <a href="settings.html">
+            <i class="fa fa-cog" aria-hidden="true"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+        <li>
+          <a href="home.html">
+            <i class="fa fa-sign-out" aria-hidden="true"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <div class="overlay" id="overlay"></div>
+  
+    <!-- Notification Popup -->
+    <div class="notification-popup" id="notificationPopup">
+      <div class="popup-header">
+        <h2>Notifications</h2>
+        <span class="close-btn" id="closePopup">&times;</span>
+      </div>
+      <div class="popup-body" id="notificationList">
+        <p>Loading notifications...</p>
+      </div>
+    </div>
+  </div>
+  
